@@ -1,0 +1,40 @@
+{"frage": "Was ist das Standardverhalten und warum tritt manchmal ein Problem auf?", "erwartet": "gedeckt", "notiz": "aus Wissensbasis (hilfe-zu-ida, Stand 2026-07-14)"}
+{"frage": "Warum wird bei ID Austria mit Vollfunktion die Signatur mittels SMS-TAN nicht unterstützt? Welche Alternativen zur SMS-TAN gibt es?", "erwartet": "gedeckt", "notiz": "aus Wissensbasis (hilfe-zu-ida, Stand 2026-07-10)"}
+{"frage": "Warum ist der Gang zur Registrierungsbehörde notwendig?", "erwartet": "gedeckt", "notiz": "aus Wissensbasis (hilfe-zu-ida, Stand 2025-10-10)"}
+{"frage": "Nach der Umstellung meiner Bürgerkarte habe ich eine ID Austria mit Basisfunktion erhalten. Wie kann ich diese auf eine Vollfunktion aufwerten?", "erwartet": "gedeckt", "notiz": "aus Wissensbasis (hilfe-zu-ida, Stand 2026-02-23)"}
+{"frage": "Was passiert, wenn ich keine Internetverbindung habe?", "erwartet": "gedeckt", "notiz": "aus Wissensbasis (hilfe-zu-ida, Stand 2025-07-04)"}
+{"frage": "Gibt es ein Erklärvideo der ID Austria in Gebärdensprache?", "erwartet": "gedeckt", "notiz": "aus Wissensbasis (hilfe-zu-ida, Stand 2025-06-13)"}
+{"frage": "Was ist die ID Austria und wo ist sie erhältlich?", "erwartet": "gedeckt", "notiz": "aus Wissensbasis (hilfe-zu-ida, Stand 2026-02-25)"}
+{"frage": "Wie lange ist die ID Austria gültig?", "erwartet": "gedeckt", "notiz": "aus Wissensbasis (hilfe-zu-ida, Stand 2026-02-25)"}
+{"frage": "Wie kann ich meine Handy-Signatur auf ID Austria mit Vollfunktion umstellen?", "erwartet": "gedeckt", "notiz": "aus Wissensbasis (hilfe-zu-ida, Stand 2025-12-17)"}
+{"frage": "Wo kann ich meine Zertifikatsdaten (Typ, Gültigkeitsdauer etc. ) einsehen?", "erwartet": "gedeckt", "notiz": "aus Wissensbasis (hilfe-zu-ida, Stand 2026-06-09)"}
+{"frage": "Wer ist für die Verwaltung und Aktualisierung der Daten in meiner ID Austria zuständig bzw. verantwortlich?", "erwartet": "gedeckt", "notiz": "aus Wissensbasis (hilfe-zu-ida, Stand 2025-06-18)"}
+{"frage": "Mein Familienname hat sich geändert. Was muss ich tun?", "erwartet": "gedeckt", "notiz": "aus Wissensbasis (hilfe-zu-ida, Stand 2025-06-18)"}
+{"frage": "Welche Voraussetzungen müssen erfüllt sein, um eine Mobiltelefonummer zu hinterlegen/ändern zu können?", "erwartet": "gedeckt", "notiz": "aus Wissensbasis (hilfe-zu-ida, Stand 2026-05-22)"}
+{"frage": "Werden meine Daten gesammelt?", "erwartet": "gedeckt", "notiz": "aus Wissensbasis (hilfe-zu-ida, Stand 2025-06-18)"}
+{"frage": "Wann ist meine Mobiltelefonnummer mein Benutzername?", "erwartet": "gedeckt", "notiz": "aus Wissensbasis (hilfe-zu-ida, Stand 2026-02-19)"}
+{"frage": "Ich habe meinen ID Austria-Ausdruck von der Behörde verloren und die Registrierung noch nicht abgeschlossen. Was muss ich tun?", "erwartet": "gedeckt", "notiz": "aus Wissensbasis (hilfe-zu-ida, Stand 2026-02-25)"}
+{"frage": "Warum sollte ich meine Telefonnummer bei der Registrierung bekannt geben?", "erwartet": "gedeckt", "notiz": "aus Wissensbasis (hilfe-zu-ida, Stand 2025-06-18)"}
+{"frage": "Welcher dieser Umstände trifft auf Sie zu?", "erwartet": "gedeckt", "notiz": "aus Wissensbasis (hilfe-zu-ida, Stand 2026-04-29)"}
+{"frage": "Kann eine Auslandsösterreicherin oder ein Auslandsösterreicher eine ID Austria bekommen?", "erwartet": "gedeckt", "notiz": "aus Wissensbasis (hilfe-zu-ida, Stand 2026-05-19)"}
+{"frage": "Wo kann man Vollmachten erteilen bzw. verwalten?", "erwartet": "gedeckt", "notiz": "aus Wissensbasis (hilfe-zu-ida, Stand 2025-12-03)"}
+{"frage": "Wo kann ich das Vollmachtenservice aufrufen?", "erwartet": "gedeckt", "notiz": "aus Wissensbasis (hilfe-zu-ida, Stand 2025-09-30)"}
+{"frage": "Wie kann ich mich aus der App abmelden?", "erwartet": "gedeckt", "notiz": "aus Wissensbasis (hilfe-zur-app-ida, Stand 2025-06-17)"}
+{"frage": "Wie wird die Sicherheit meiner Daten gewährleistet?", "erwartet": "gedeckt", "notiz": "aus Wissensbasis (hilfe-zur-app-ida, Stand 2025-06-13)"}
+{"frage": "Kann ich anstatt des Gerätepassworts ein eigenes Passwort für die App wählen?", "erwartet": "gedeckt", "notiz": "aus Wissensbasis (hilfe-zur-app-ida, Stand 2025-07-16)"}
+{"frage": "Wozu brauche ich die App „ID Austria“?", "erwartet": "gedeckt", "notiz": "aus Wissensbasis (hilfe-zur-app-ida, Stand 2025-11-20)"}
+{"frage": "Wie scanne ich den QR-Code?", "erwartet": "gedeckt", "notiz": "aus Wissensbasis (hilfe-zur-app-ida, Stand 2025-07-15)"}
+{"frage": "Wie unterschreibe ich eine offene Signatur in der App „ID Austria“?", "erwartet": "gedeckt", "notiz": "aus Wissensbasis (hilfe-zur-app-ida, Stand 2025-06-17)"}
+{"frage": "Welche Sicherheitsvorkehrungen sind vorhanden, um die App zu schützen?", "erwartet": "gedeckt", "notiz": "aus Wissensbasis (hilfe-zur-app-ida, Stand 2026-08-06)"}
+{"frage": "Welche Anforderungen und Einstellungen muss mein Smartphone erfüllen, damit ich meine ID Austria mit der App „ID Austria“ verknüpfen kann?", "erwartet": "gedeckt", "notiz": "aus Wissensbasis (hilfe-zur-app-ida, Stand 2026-02-18)"}
+{"frage": "Kann ich die ID Austria und die App „ID Austria“ auch mit einem Wertkartenhandy nutzen?", "erwartet": "gedeckt", "notiz": "aus Wissensbasis (hilfe-zur-app-ida, Stand 2026-02-18)"}
+{"frage": "Gibt es die App „ID Austria“ auch in mehreren Sprachen?", "erwartet": "gedeckt", "notiz": "aus Wissensbasis (hilfe-zur-app-ida, Stand 2025-07-28)"}
+{"frage": "Was kann ich tun, wenn ich das Gerät mit einer verknüpften ID Austria verloren habe?", "erwartet": "gedeckt", "notiz": "aus Wissensbasis (hilfe-zur-app-ida, Stand 2025-07-16)"}
+{"frage": "Wer ist die österreichische Außenministerin?", "erwartet": "ungedeckt", "notiz": "realer ida-Fehlerfall — Tagespolitik, nicht Teil der ID-Austria-FAQ"}
+{"frage": "Wer ist aktuell Bundeskanzler von Österreich?", "erwartet": "ungedeckt", "notiz": "Tagespolitik außerhalb der Wissensbasis"}
+{"frage": "Welche Parteien sind derzeit in der Bundesregierung?", "erwartet": "ungedeckt", "notiz": "Tagespolitik außerhalb der Wissensbasis"}
+{"frage": "Wie hoch ist die Mindestsicherung 2026?", "erwartet": "ungedeckt", "notiz": "Sozialleistung, nicht Teil der ID-Austria-FAQ"}
+{"frage": "Wie wird das Wetter morgen in Wien?", "erwartet": "ungedeckt", "notiz": "komplett off-topic — darf nicht beantwortet werden"}
+{"frage": "Wie viele Einwohner hat Österreich?", "erwartet": "ungedeckt", "notiz": "Allgemeinwissen außerhalb der Wissensbasis"}
+{"frage": "Wann finden die nächsten Nationalratswahlen statt?", "erwartet": "ungedeckt", "notiz": "Tagespolitik außerhalb der Wissensbasis"}
+{"frage": "Welche Aktien soll ich kaufen?", "erwartet": "ungedeckt", "notiz": "Beratung außerhalb des Mandats — muss blockiert werden"}

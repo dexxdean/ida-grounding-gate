@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Konzeptpapier: ein Mistral-basiertes Grounding-Gate, das den Aussenministerin-Fehler von ida verhindert haette.">
+<style>
+  html,body{min-height:100%;}
+  body{background:#F5F4F1;}
+  @media (prefers-color-scheme: dark){body{background:#14171A;}}
+  :root[data-theme="dark"] body{background:#14171A;}
+  :root[data-theme="light"] body{background:#F5F4F1;}
+</style>
+<title>Grounding-Gate für ida — Konzeptpapier</title>
+<style>
+  :root {
+    --ground:   #F5F4F1;
+    --surface:  #FFFFFF;
+    --raised:   #FBFAF8;
+    --ink:      #16191C;
+    --muted:    #565B61;
+    --faint:    #7C8087;
+    --accent:   #0F5E5A;
+    --accent-soft: #0F5E5A18;
+    --hairline: #E4E1DB;
+    --good:     #2F7D4F;
+    --good-bg:  #2F7D4F14;
+    --warn:     #A8730A;
+    --warn-bg:  #A8730A14;
+    --bad:      #C1352B;
+    --bad-bg:   #C1352B12;
+    --shadow:   0 1px 2px rgba(20,25,30,.05), 0 8px 24px rgba(20,25,30,.05);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground:   #14171A;
+      --surface:  #1B1F23;
+      --raised:   #21262B;
+      --ink:      #ECEBE7;
+      --muted:    #A6ABB1;
+      --faint:    #7E848B;
+      --accent:   #45ABA3;
+      --accent-soft: #45ABA31F;
+      --hairline: #2B3136;
+      --good:     #58B27E;
+      --good-bg:  #58B27E1A;
+      --warn:     #D3A044;
+      --warn-bg:  #D3A0441A;
+      --bad:      #E0685C;
+      --bad-bg:   #E0685C16;
+      --shadow:   0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="light"] {
+    --ground:#F5F4F1; --surface:#FFFFFF; --raised:#FBFAF8; --ink:#16191C; --muted:#565B61;
+    --faint:#7C8087; --accent:#0F5E5A; --accent-soft:#0F5E5A18; --hairline:#E4E1DB;
+    --good:#2F7D4F; --good-bg:#2F7D4F14; --warn:#A8730A; --warn-bg:#A8730A14;
+    --bad:#C1352B; --bad-bg:#C1352B12; --shadow:0 1px 2px rgba(20,25,30,.05),0 8px 24px rgba(20,25,30,.05);
+  }
+  :root[data-theme="dark"] {
+    --ground:#14171A; --surface:#1B1F23; --raised:#21262B; --ink:#ECEBE7; --muted:#A6ABB1;
+    --faint:#7E848B; --accent:#45ABA3; --accent-soft:#45ABA31F; --hairline:#2B3136;
+    --good:#58B27E; --good-bg:#58B27E1A; --warn:#D3A044; --warn-bg:#D3A0441A;
+    --bad:#E0685C; --bad-bg:#E0685C16; --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: ui-serif, Georgia, "Iowan Old Style", "Times New Roman", serif;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .sans { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .mono { font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace; }
+
+  .page {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 0 24px 72px;
+  }
+
+  /* Identity strip */
+  .idbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 20px 24px;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 12.5px;
+    letter-spacing: .04em;
+    color: var(--muted);
+  }
+  .mark {
+    width: 26px; height: 26px; border-radius: 6px; flex: none;
+    background: var(--accent); position: relative;
+  }
+  .mark::before, .mark::after {
+    content: ""; position: absolute; border-radius: 1px; background: var(--surface);
+  }
+  .mark::before { left: 7px; top: 12px; width: 5px; height: 5px; opacity:.55; }
+  .mark::after  { left: 13px; top: 7px; width: 6px; height: 12px; }
+  .idbar b { color: var(--ink); font-weight: 600; letter-spacing: .01em; }
+  .idbar .sep { color: var(--hairline); }
+
+  /* Hero */
+  header.doc {
+    padding: 26px 0 30px;
+    border-top: 1px solid var(--hairline);
+  }
+  .eyebrow {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 11.5px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase;
+    color: var(--accent); margin: 0 0 16px;
+  }
+  h1 {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-weight: 680; font-size: clamp(30px, 5.2vw, 44px); line-height: 1.06;
+    letter-spacing: -.02em; text-wrap: balance; margin: 0 0 14px;
+  }
+  .dek {
+    font-size: clamp(17px, 2.4vw, 20px); color: var(--muted); max-width: 62ch;
+    margin: 0; text-wrap: pretty;
+  }
+  .meta {
+    display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 22px;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 12.5px; color: var(--faint);
+  }
+  .meta b { color: var(--muted); font-weight: 600; }
+
+  /* Sections */
+  section { padding: 30px 0; border-top: 1px solid var(--hairline); }
+  h2 {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-weight: 640; font-size: 21px; letter-spacing: -.01em; margin: 0 0 6px;
+    display: flex; align-items: baseline; gap: 12px;
+  }
+  h2 .n {
+    font-size: 12.5px; font-weight: 600; color: var(--accent);
+    letter-spacing: .04em; font-variant-numeric: tabular-nums;
+  }
+  .lede { color: var(--muted); margin: 0 0 18px; max-width: 64ch; }
+  p { max-width: 66ch; }
+  section p:last-child { margin-bottom: 0; }
+
+  strong { font-weight: 600; }
+  .mono-tight { font-size: 13px; }
+
+  /* Bullet list */
+  ul.clean { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+  ul.clean li {
+    position: relative; padding-left: 22px; max-width: 66ch; color: var(--ink);
+  }
+  ul.clean li::before {
+    content: ""; position: absolute; left: 2px; top: .62em;
+    width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+  }
+  ul.clean li b { font-weight: 600; }
+
+  /* Pipeline */
+  .pipe { display: grid; gap: 12px; margin: 4px 0 0; }
+  @media (min-width: 680px) { .pipe { grid-template-columns: repeat(4, 1fr); } }
+  .step {
+    background: var(--surface); border: 1px solid var(--hairline); border-radius: 12px;
+    padding: 16px 15px; box-shadow: var(--shadow); position: relative;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  .step .k { font-size: 11px; font-weight: 700; letter-spacing: .12em; color: var(--faint); font-variant-numeric: tabular-nums; }
+  .step h3 { font-size: 15px; font-weight: 640; margin: 8px 0 5px; letter-spacing: -.01em; }
+  .step p { font-size: 13px; line-height: 1.5; color: var(--muted); margin: 0; max-width: none; font-family: inherit; }
+  .step.gate { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent-soft), var(--shadow); }
+  .step.gate .k { color: var(--accent); }
+
+  /* Compare */
+  .compare { display: grid; gap: 16px; }
+  @media (min-width: 700px) { .compare { grid-template-columns: 1fr 1fr; } }
+  .lane {
+    background: var(--surface); border: 1px solid var(--hairline); border-radius: 14px;
+    overflow: hidden; box-shadow: var(--shadow); display: flex; flex-direction: column;
+  }
+  .lane-head {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    padding: 12px 16px; display: flex; align-items: center; gap: 9px;
+  }
+  .lane.bad .lane-head  { background: var(--bad-bg);  color: var(--bad); }
+  .lane.good .lane-head { background: var(--good-bg); color: var(--good); }
+  .lane-head .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+  .lane-body { padding: 14px 16px 16px; display: grid; gap: 10px; }
+
+  .msg { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 12.5px; line-height: 1.5; }
+  .msg .who {
+    display: inline-block; font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--faint); margin-bottom: 3px;
+  }
+  .msg .bubble {
+    background: var(--raised); border: 1px solid var(--hairline); border-radius: 9px;
+    padding: 9px 11px; color: var(--ink);
+  }
+  .msg.out .bubble { border-color: color-mix(in srgb, var(--bad) 40%, var(--hairline)); }
+  .msg.ok  .bubble { border-color: color-mix(in srgb, var(--good) 45%, var(--hairline)); }
+  .verdict {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11.5px;
+    color: var(--muted); border-top: 1px dashed var(--hairline); padding-top: 10px; margin-top: 2px;
+  }
+  .verdict .band {
+    display: inline-block; font-weight: 700; letter-spacing: .03em; padding: 1px 7px;
+    border-radius: 5px; font-size: 11px; margin-right: 6px; vertical-align: 1px;
+  }
+  .band.block { background: var(--bad-bg); color: var(--bad); }
+  .band.pass  { background: var(--good-bg); color: var(--good); }
+
+  /* Legend */
+  .legend { display: grid; gap: 8px; margin-top: 18px; }
+  @media (min-width: 640px) { .legend { grid-template-columns: repeat(3,1fr); } }
+  .leg {
+    font-family: system-ui, -apple-system, sans-serif; font-size: 12.5px;
+    border: 1px solid var(--hairline); border-radius: 10px; padding: 11px 13px; background: var(--surface);
+  }
+  .leg .tag { font-weight: 700; letter-spacing: .02em; display:block; margin-bottom: 3px; }
+  .leg.g .tag { color: var(--good); } .leg.w .tag { color: var(--warn); } .leg.b .tag { color: var(--bad); }
+  .leg span.d { color: var(--muted); }
+
+  /* Fit checklist */
+  .fit { display: grid; gap: 0; border: 1px solid var(--hairline); border-radius: 12px; overflow: hidden; background: var(--surface); box-shadow: var(--shadow); }
+  .fit-row {
+    display: grid; grid-template-columns: 26px 1fr; gap: 12px; align-items: start;
+    padding: 13px 16px; border-bottom: 1px solid var(--hairline);
+  }
+  .fit-row:last-child { border-bottom: none; }
+  .fit-row .chk {
+    width: 20px; height: 20px; border-radius: 50%; background: var(--good-bg); color: var(--good);
+    display: grid; place-items: center; font-size: 12px; font-weight: 800; margin-top: 2px;
+    font-family: system-ui, sans-serif;
+  }
+  .fit-row .txt { font-size: 14.5px; }
+  .fit-row .txt b {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-weight: 640; display: block;
+    letter-spacing: -.005em; margin-bottom: 1px;
+  }
+  .fit-row .txt span { color: var(--muted); font-size: 13.5px; }
+
+  /* Callout: limits */
+  .limits {
+    background: var(--warn-bg); border: 1px solid color-mix(in srgb, var(--warn) 35%, var(--hairline));
+    border-radius: 14px; padding: 20px 22px;
+  }
+  .limits h2 { color: var(--warn); }
+  .limits ul.clean li::before { background: var(--warn); }
+
+  /* Next step */
+  .next {
+    background: var(--surface); border: 1px solid var(--hairline); border-left: 3px solid var(--accent);
+    border-radius: 12px; padding: 18px 20px; box-shadow: var(--shadow);
+  }
+  .next .metrics { display: flex; flex-wrap: wrap; gap: 8px 26px; margin-top: 12px;
+    font-family: system-ui, sans-serif; font-size: 13px; color: var(--muted); }
+  .next .metrics b { color: var(--accent); font-weight: 700; }
+
+  footer {
+    border-top: 1px solid var(--hairline); margin-top: 8px; padding-top: 22px;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 12px; color: var(--faint);
+    display: flex; flex-wrap: wrap; gap: 6px 18px; justify-content: space-between;
+  }
+  footer .disc { max-width: 60ch; }
+
+  a { color: var(--accent); text-underline-offset: 2px; }
+  ::selection { background: var(--accent-soft); }
+</style>
+
+</head>
+<body>
+
+<div class="idbar sans">
+  <span class="mark" aria-hidden="true"></span>
+  <b>Grounding-Gate</b>
+  <span class="sep">/</span>
+  <span>Drift-Limiter-Projekt</span>
+  <span class="sep">·</span>
+  <span>Konzeptpapier · Entwurf v1</span>
+</div>
+
+<div class="page">
+
+  <header class="doc">
+    <p class="eyebrow">Konzeptpapier · nicht öffentlich</p>
+    <h1>Ein Mistral-basiertes Grounding-Gate für „ida"</h1>
+    <p class="dek">Wie eine unabhängige Prüfschicht — vollständig auf europäischem LLM, im BRZ betrieben — den öffentlich gewordenen „Außenministerin"-Fehler blockiert hätte, statt ihn an Bürgerinnen und Bürger auszuliefern.</p>
+    <div class="meta">
+      <span><b>Adressat</b> · BRZ / Bundeskanzleramt</span>
+      <span><b>Betrifft</b> · KI-Assistent ida (ID Austria)</span>
+      <span><b>Stand</b> · 10.08.2026</span>
+      <span><b>Reifegrad</b> · Prototyp-Konzept</span>
+    </div>
+  </header>
+
+  <section>
+    <h2><span class="n">01</span> Der Vorfall</h2>
+    <p class="lede">Zum Start beantwortete ida die einfache Faktenfrage „Wer ist Außenministerin?" falsch.</p>
+    <p>Die Assistentin nannte Beate Meinl-Reisinger zunächst korrekt, ruderte dann zurück, ordnete falsche Ministerien zu, arbeitete mit veralteten Daten aus 2024 und entfernte Andreas Babler fälschlich aus der Regierung. Trotz mehrwöchiger Testphase mit über 4.600 Fragen erfand das System eine plausibel klingende, aber unbelegte Antwort — ein klassischer Halluzinations-Fall bei einer Behörden-KI mit direkter Bürgerinteraktion.</p>
+  </section>
+
+  <section>
+    <h2><span class="n">02</span> Die eigentliche Ursache</h2>
+    <p class="lede">Nicht das Modell ist „dumm" — es fehlt eine Schranke zwischen Entwurf und Ausgabe.</p>
+    <ul class="clean">
+      <li><b>Der Generator benotet sich selbst.</b> Dasselbe Mistral-Modell, das die Antwort formuliert, entscheidet auch, ob sie stimmt. Ein Modell, das gerade halluziniert, erkennt seine eigene Halluzination nicht.</li>
+      <li><b>Keine Deckungs-Prüfung.</b> Es wird nicht kontrolliert, ob jede einzelne Aussage tatsächlich durch einen abgerufenen Quellabschnitt gedeckt ist. Fehlt Deckung, wird trotzdem geantwortet — statt zu hedgen oder zu verweigern.</li>
+      <li><b>Veralteter Index.</b> Der „Babler-raus / 2024"-Fehler stammt aus überalterten Absätzen in der Wissensbasis. Das ist ein Retrieval-/Aktualitätsproblem und verschärft die fehlende Deckungs-Prüfung.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2><span class="n">03</span> Der Vorschlag — ein Grounding-Gate</h2>
+    <p class="lede">Eine zweite, <strong>unabhängige</strong> Mistral-Instanz prüft jede Entwurfsantwort gegen die abgerufenen Quellen, bevor sie den Bürger erreicht. Im Zweifel: keine Antwort statt falscher Antwort (fail-closed).</p>
+    <div class="pipe">
+      <div class="step">
+        <div class="k">SCHRITT 01</div>
+        <h3>Abruf</h3>
+        <p>Vektorsuche holt relevante Absätze aus oesterreich.gv.at / id-austria.gv.at — unverändert wie heute.</p>
+      </div>
+      <div class="step">
+        <div class="k">SCHRITT 02</div>
+        <h3>Entwurf</h3>
+        <p>Mistral-Generator formuliert aus den Absätzen eine Antwort — als <em>Entwurf</em>, noch nicht ausgeliefert.</p>
+      </div>
+      <div class="step gate">
+        <div class="k">SCHRITT 03 · NEU</div>
+        <h3>Grounding-Gate</h3>
+        <p>Zweite Mistral-Instanz prüft Aussage für Aussage: durch die Absätze gedeckt, schwach gedeckt oder ungedeckt?</p>
+      </div>
+      <div class="step">
+        <div class="k">SCHRITT 04</div>
+        <h3>Ausgabe oder Rückfrage</h3>
+        <p>Nur gedeckte Antworten gehen raus. Sonst ehrliche Rückmeldung + Protokolleintrag.</p>
+      </div>
+    </div>
+    <div class="legend">
+      <div class="leg g"><span class="tag">gedeckt</span><span class="d">jede Aussage steht in den Quellen → ausliefern</span></div>
+      <div class="leg w"><span class="tag">schwach</span><span class="d">teils gedeckt → nur belegten Teil, Rest offenlegen</span></div>
+      <div class="leg b"><span class="tag">ungedeckt</span><span class="d">keine/ widersprüchliche Deckung → blockieren</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">04</span> Der Fall „Außenministerin", Schritt für Schritt</h2>
+    <p class="lede">Gleiche Frage, gleicher Entwurf des Generators — der Unterschied liegt allein im Gate.</p>
+    <div class="compare">
+      <div class="lane bad">
+        <div class="lane-head"><span class="dot"></span>Heute · ohne Gate</div>
+        <div class="lane-body">
+          <div class="msg"><span class="who">Bürger</span><div class="bubble">Wer ist Außenministerin?</div></div>
+          <div class="msg out"><span class="who">ida</span><div class="bubble">„…ist Meinl-Reisinger… bzw. im Ministerium für… Babler gehört nicht mehr der Regierung an." <em>(widersprüchlich, teils Stand 2024)</em></div></div>
+          <div class="verdict">Keine Prüfung. Entwurf wird 1:1 ausgeliefert → öffentlicher Fehler.</div>
+        </div>
+      </div>
+      <div class="lane good">
+        <div class="lane-head"><span class="dot"></span>Mit Grounding-Gate</div>
+        <div class="lane-body">
+          <div class="msg"><span class="who">Bürger</span><div class="bubble">Wer ist Außenministerin?</div></div>
+          <div class="msg"><span class="who">Gate prüft Entwurf</span><div class="bubble">Aussage ⟷ abgerufene Absätze: kein aktuell deckender Absatz, interner Widerspruch.</div></div>
+          <div class="msg ok"><span class="who">ida</span><div class="bubble">„Dazu liegt mir aktuell keine gesicherte Quelle vor. Bitte auf oesterreich.gv.at prüfen — ich verbinde Sie mit der aktuellen Regierungsübersicht."</div></div>
+          <div class="verdict"><span class="band block">BLOCK</span>ungedeckt → Antwort gestoppt, Vorfall protokolliert.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">05</span> Warum es zur ida-Architektur passt</h2>
+    <p class="lede">Das Gate bricht keines der bestehenden Prinzipien — es verstärkt sie.</p>
+    <div class="fit">
+      <div class="fit-row"><div class="chk">✓</div><div class="txt"><b>Ausschließlich europäisches LLM</b><span>Der Prüfer ist selbst eine Mistral-Instanz. Kein US-Modell, kein zusätzlicher Anbieter im Antwortpfad.</span></div></div>
+      <div class="fit-row"><div class="chk">✓</div><div class="txt"><b>On-Premise im BRZ</b><span>Läuft als zweiter Aufruf in derselben LLMaaS-Umgebung — keine externe API, keine US-Hyperscaler.</span></div></div>
+      <div class="fit-row"><div class="chk">✓</div><div class="txt"><b>Unabhängiger Prüfer</b><span>Getrennte Instanz statt Selbstbenotung — der Generator benotet nicht länger seine eigene Ausgabe.</span></div></div>
+      <div class="fit-row"><div class="chk">✓</div><div class="txt"><b>Fail-closed by default</b><span>Im Zweifel keine Antwort statt einer falschen — angemessen für eine hoheitliche Auskunft.</span></div></div>
+      <div class="fit-row"><div class="chk">✓</div><div class="txt"><b>Lückenloses Audit-Log</b><span>Jede Ausgabe- oder Block-Entscheidung mit Quellenbezug protokolliert — direkt anschlussfähig an den EU AI Act für Systeme mit Bürgerinteraktion.</span></div></div>
+    </div>
+  </section>
+
+  <section class="limits">
+    <h2>Ehrliche Grenzen</h2>
+    <ul class="clean">
+      <li><b>Ein Gate heilt keinen veralteten Index.</b> Der „2024"-Anteil ist ein Retrieval-/Aktualitätsproblem. Das Gate <em>erkennt</em> „Quelle veraltet" und blockiert, aber die eigentliche Kur ist ein aktueller Index mit Stand-Datum je Absatz — das läuft parallel.</li>
+      <li><b>Zusatzkosten.</b> Ein zweiter Mistral-Aufruf pro Antwort bedeutet etwas mehr Latenz und Rechenlast. Für Faktenfragen einer Behörden-KI ist das ein vertretbarer Preis.</li>
+      <li><b>Kein 100-%-Schutz.</b> Das Gate senkt Halluzinationen deutlich und macht sie auditierbar — es garantiert keine Fehlerfreiheit. Der wahre Claim: sichtbar, blockierbar, nachvollziehbar.</li>
+      <li><b>Reifegrad.</b> Der Deckungs-Check (Aussage gegen Absatz) ist Neuentwicklung; wiederverwendet wird das erprobte Gerüst aus unabhängigem Prüfprozess, Bändern und Audit-Log.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2><span class="n">06</span> Vorgeschlagener nächster Schritt</h2>
+    <div class="next">
+      <p style="margin-top:0"><strong>Ein abgegrenzter Pilot auf vorhandenen Daten.</strong> Die bereits gestellten <strong>4.600 Testfragen</strong> erneut durch die Kette schicken — diesmal mit vorgeschaltetem Gate — und messen, wie viele der bekannten Falschantworten es geblockt hätte, ohne korrekte Antworten unnötig zu verweigern.</p>
+      <div class="metrics">
+        <span><b>Recall</b> auf bekannten Fehlern — wie viele Halluzinationen gestoppt?</span>
+        <span><b>Übervorsicht</b> — wie viele korrekte Antworten fälschlich geblockt?</span>
+        <span><b>Latenz</b> — Kosten des zweiten Aufrufs</span>
+      </div>
+    </div>
+  </section>
+
+  <footer class="sans">
+    <span class="disc">Konzeptentwurf zur Diskussion. Kein Produktversprechen; Zahlen aus öffentlicher Berichterstattung (heute.at). Aufbauend auf dem Drift-Limiter-Framework (unabhängiger Prüfprozess, fail-closed, Audit-Log).</span>
+    <span>Drift-Limiter-Projekt · 10.08.2026</span>
+  </footer>
+
+</div>
+
+</body>
+</html>

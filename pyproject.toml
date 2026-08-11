@@ -1,0 +1,19 @@
+[project]
+name = "ida-gate"
+version = "0.1.0"
+description = "Mistral-basiertes Grounding-Gate: prüft RAG-Antworten gegen abgerufene Quellen, bevor sie ausgeliefert werden (fail-closed)."
+license = "Apache-2.0"
+requires-python = ">=3.10"
+dependencies = []
+
+# Optionale Zusatzpakete für Harvest / Mistral-Adapter. Bewusst optional, damit
+# das Kernpaket abhängigkeitsfrei bleibt.
+[project.optional-dependencies]
+harvest = ["httpx", "selectolax"]
+mistral = ["httpx"]
+
+[project.scripts]
+ida-gate = "ida_gate.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

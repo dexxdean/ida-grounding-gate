@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "idaverbesserung — Grounding-Gate für ida"
+abstract: >-
+  Unabhängige, fail-closed Prüfschicht, die jede RAG-Entwurfsantwort gegen die
+  tatsächlich abgerufenen Quellabschnitte prüft, bevor sie ausgeliefert wird.
+  Im Zweifel: keine Antwort statt einer falschen.
+type: software
+authors:
+  - name: dexxdean
+repository-code: "https://github.com/dexxdean/ida-grounding-gate"
+url: "https://github.com/dexxdean/ida-grounding-gate"
+license: Apache-2.0
+version: 0.1.0
+date-released: "2026-08-11"
+keywords:
+  - RAG
+  - grounding
+  - hallucination-detection
+  - fail-closed
+  - LLM
+  - Mistral
+  - AI-safety

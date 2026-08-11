@@ -1,0 +1,20 @@
+# Laufzeit-Audit-Log des Gates (wird bei jedem check geschrieben)
+.ida-gate/
+
+# Roh-HTML aus dem Harvest (enthält ggf. personenbezogene Kontaktdaten der
+# Quellseiten) — wird bei Bedarf via harvest/harvest.py neu erzeugt, nicht versioniert.
+data/raw/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# macOS
+.DS_Store
+
+# Editor
+.idea/
+.vscode/
