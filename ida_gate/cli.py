@@ -1,18 +1,16 @@
 """CLI für ida_gate.
 
 Verfügbar:
-  check          eine Entwurfsantwort gegen Quellabschnitte prüfen (läuft)
-  harvest        FAQ-Seiten in data/faq/ einsammeln (TODO — siehe harvest/)
-  build-testset  Testfragen inkl. Negativ-Fallen erzeugen (TODO)
-
-`check` funktioniert schon heute mit dem Heuristik-Judge.
+  check          eine Entwurfsantwort gegen Quellabschnitte prüfen
+  harvest        FAQ-Seiten in data/faq/ einsammeln
+  build-testset  Testfragen inkl. Negativ-Fallen erzeugen
 """
 
 from __future__ import annotations
 
 import argparse
+import importlib
 import json
-import sys
 
 from .gate import check
 from .judge import get_judge
@@ -44,13 +42,17 @@ def _cmd_check(args: argparse.Namespace) -> int:
     return 0
 
 
-def _cmd_todo(args: argparse.Namespace) -> int:
-    print(
-        f"[TODO] `{args._name}` ist noch nicht implementiert.\n"
-        f"       Siehe harvest/README.md (Datenbeschaffung) — wird als Nächstes gebaut.",
-        file=sys.stderr,
-    )
-    return 1
+def _run_module_main(module_name: str) -> int:
+    module = importlib.import_module(module_name)
+    return int(module.main())
+
+
+def _cmd_harvest(args: argparse.Namespace) -> int:
+    return _run_module_main("harvest.harvest")
+
+
+def _cmd_build_testset(args: argparse.Namespace) -> int:
+    return _run_module_main("harvest.build_testset")
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -66,12 +68,11 @@ def build_parser() -> argparse.ArgumentParser:
     c.add_argument("--fail-on-block", action="store_true", help="Exit-Code 2 bei Block.")
     c.set_defaults(func=_cmd_check)
 
-    for name, helptext in [
-        ("harvest", "FAQ-Seiten einsammeln (TODO)."),
-        ("build-testset", "Testfragen inkl. Fallen erzeugen (TODO)."),
-    ]:
-        t = sub.add_parser(name, help=helptext)
-        t.set_defaults(func=_cmd_todo, _name=name)
+    h = sub.add_parser("harvest", help="FAQ-Seiten einsammeln.")
+    h.set_defaults(func=_cmd_harvest)
+
+    bt = sub.add_parser("build-testset", help="Testfragen inkl. Fallen erzeugen.")
+    bt.set_defaults(func=_cmd_build_testset)
 
     return p
 

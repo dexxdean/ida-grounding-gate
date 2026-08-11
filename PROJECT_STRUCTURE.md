@@ -14,8 +14,8 @@ idaverbesserung/
 │   │                         Muster aus drift_limiter/store.py adaptiert
 │   ├── gate.py               Kern: Band-Logik gedeckt/schwach/ungedeckt
 │   ├── judge.py              Prüfer-Interface: Heuristik-Fallback (läuft offline)
-│   │                         + Mistral-Adapter (TODO, on-prem)
-│   └── cli.py                CLI: harvest · build-testset · check
+│   │                         + implementierter Mistral-Adapter (LLMaaS/Ollama)
+│   └── cli.py                CLI: check · harvest · build-testset
 │
 ├── data/
 │   ├── raw/                  46 gesicherte Roh-HTML-Seiten
@@ -24,6 +24,7 @@ idaverbesserung/
 │   └── testsets/            testset.jsonl (32 gedeckt / 8 Fallen)
 │
 ├── harvest/                  Daten-Beschaffung (stdlib, dependency-frei)
+│   ├── __init__.py           macht harvest zum Paket (für `cli.py`-Aufruf)
 │   ├── README.md             Quell-URLs, Pipeline, Bereinigungsregeln
 │   ├── harvest.py            Sitemap → Fetch → Parse → clean → data/faq/
 │   ├── clean.py              Normalisierung + Klassifikation (ist_frage)

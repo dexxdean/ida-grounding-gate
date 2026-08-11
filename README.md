@@ -37,11 +37,12 @@ Analog zum Drift-Limiter, aber auf Deckung statt Ziel-Drift gemünzt:
 
 ## Status
 
-**Frühes Gerüst.** Wiederverwendet Muster aus dem Drift-Limiter-Projekt
-(Audit-Log, Bänder, unabhängiger Prüfprozess). Der eigentliche Deckungs-Check
-(Aussage ⟷ Absatz) via Mistral ist **noch nicht** implementiert — siehe
-`ida_gate/judge.py` (`TODO: Mistral-Adapter`). Aktuell läuft ein transparenter
-Heuristik-Prüfer als Platzhalter, damit die Kette end-to-end testbar ist.
+**Lauffähiger Prototyp.** Wiederverwendet Muster aus dem Drift-Limiter-Projekt
+(Audit-Log, Bänder, unabhängiger Prüfprozess). Die Kette ist end-to-end testbar:
+`HeuristicJudge` läuft offline als transparenter Platzhalter, der `MistralJudge`-
+Adapter ist implementiert (OpenAI-kompatible LLMaaS-API, Env-Config, stdlib-HTTP,
+injizierbarer Transport, fail-closed). Offen bleibt die Kalibrierung gegen den
+echten BRZ-Endpoint bzw. ein produktionsnahes starkes Mistral-Modell.
 
 ## Datenlage (Stand 10.08.2026)
 

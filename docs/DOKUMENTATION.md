@@ -42,29 +42,35 @@ Fail-closed: `schwach` wird bewusst nicht 1:1 ausgeliefert. Schwellen in
 |--------------|--------|
 | `models.py`  | Datenklassen `FAQItem` (mit `ist_frage`), `TestQuestion`, `GroundingResult`, `AuditEvent`. |
 | `store.py`   | Append-only Audit-Log unter `.ida-gate/events.jsonl` (aus `drift_limiter/store.py` adaptiert). |
-| `judge.py`   | Prüfer: `HeuristicJudge` (Token-Überlappung, läuft offline) + `MistralJudge` (**TODO-Stub**). `get_judge(name)`. |
-| `gate.py`    | `split_claims()`, `check(answer, sources, judge)` → `GroundingResult`. Band-Logik. |
-| `cli.py`     | Befehle `check` (läuft), `harvest`/`build-testset` (Verweis-Stubs). |
+| `judge.py`   | Prüfer: `HeuristicJudge` (Token-Überlappung, läuft offline) + implementierter `MistralJudge`-Adapter für OpenAI-kompatible LLMaaS-Endpoints. `get_judge(name)`. |
+| `gate.py`    | `split_claims()`, `check(answer, sources, judge, question=None)` → `GroundingResult`. Band-Logik. |
+| `cli.py`     | Befehle `check`, `harvest`, `build-testset`. |
 
-### `gate.check(answer, sources, judge=None) -> GroundingResult`
+### `gate.check(answer, sources, judge=None, question=None) -> GroundingResult`
 
 - Zerlegt `answer` in Aussagen (`split_claims`, satzbasiert — Platzhalter).
 - Lässt jede Aussage vom `judge` bewerten (0..1 Deckungsgrad).
 - Aggregiert über die **schwächste** Aussage zum Band.
 - Fail-closed: keine `sources` oder keine Aussagen ⇒ `ungedeckt`.
+- Reicht die optionale Nutzerfrage an den Judge weiter; das hilft bei kurzen
+  Antwortfragmenten wie „Nein, das ist nicht möglich.", die ohne Fragekontext
+  nicht sauber prüfbar sind.
 
 ### Prüfer-Interface (`judge.Judge`)
 
 ```python
 class Judge(Protocol):
     name: str
-    def coverage(self, claim: str, sources: list[str]) -> float: ...
+    def coverage(self, claim: str, sources: list[str], question: str | None = None) -> float: ...
 ```
 
-`MistralJudge` (noch offen): zweite, unabhängige Mistral-Instanz im BRZ. Prompt
-fragt „Ist die AUSSAGE ausschließlich durch die QUELLEN gedeckt?", Antwort JSON,
-Mapping auf 0..1. Endpoint/Key aus Umgebungsvariablen, nie hartkodiert; kein
-Netzaufruf im Default-Testpfad (CI nutzt `HeuristicJudge`).
+`MistralJudge`: zweite, unabhängige Mistral-Instanz im BRZ oder ein
+OpenAI-kompatibler Proxy. Prompt fragt „Ist die AUSSAGE ausschließlich durch die
+QUELLEN gedeckt?", Antwort JSON, Mapping auf 0..1. Endpoint/Key kommen aus
+Umgebungsvariablen, nie hartkodiert. Der Transport ist injizierbar; deshalb laufen
+die Tests ohne Netz. Ist der Prüfer nicht erreichbar oder antwortet unparsebar,
+gilt die Aussage als ungedeckt (fail-closed). Eine echte Fehlkonfiguration wirft
+`MistralConfigError`.
 
 ## 4. Daten
 

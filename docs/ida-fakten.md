@@ -54,7 +54,7 @@ Confidence-/Temporal-/Claim-Drift, kein reines „weiß es nicht".
 - ✅ **Testset-Falle „Außenministerin":** Halluzination in `eval/run_eval.py` von
   „Karin Kneissl" auf **„Karoline Edtstadler"** korrigiert (entspricht dem realen
   Rückzieher). Falle bleibt gültig — Regierungspersonal liegt außerhalb der
-  ID-Austria-Wissensbasis; Gate blockt sie zu 100 %.
+  ID-Austria-Wissensbasis; im aktuellen Testset blockt das Gate diesen Fall.
 - ✅ **`judge.py` Modell:** Default von `mistral-small` auf `mistral-unbekannt`
   geändert und im Kommentar als **Annahme/Platzhalter** gekennzeichnet — die
   öffentlich nicht genannte Variante wird nicht mehr als Fakt suggeriert.
@@ -79,12 +79,23 @@ Mit hoher Wahrscheinlichkeit **kein 7B** (zu schwach für Behördenqualität).
 
 ## Lokaler Test-Befund (2026-08-10)
 
-Der `MistralJudge` wurde gegen ein **echtes lokales Mistral 7B** (Ollama) gefahren:
-Fallen-Recall **100 %** (Sicherheit hält), aber Übervorsicht 15,6 % / 28,1 % (mit
-Frage-Kontext) — das 7B blockt sogar fast wörtlich Gedecktes. **Merke:** unsere
-lokalen Präzisionszahlen sind eine **Untergrenze wegen Modellschwäche**, kein Urteil
-über das Gate-Design. Erst ein starkes Modell / der BRZ-Endpoint liefert belastbare
-Präzision. Fallen-Recall = 100 % ist dagegen über alle Läufe stabil.
+Der `MistralJudge` wurde lokal gegen OpenAI-kompatible Ollama-Endpoints gefahren.
+Der 7B-Lauf zeigte stabilen Fallen-Recall **100 %**, aber hohe Übervorsicht
+15,6 % ohne / 28,1 % mit Frage-Kontext. Das 7B blockt sogar fast wörtlich
+Gedecktes und ist deshalb **kein valider Präzisions-Benchmark**.
+
+Der stärkere Proxy-Lauf mit **Mistral NeMo 12B** ist aussagekräftiger:
+
+| Judge / Modus | Fallen-Recall | Übervorsicht | Genauigkeit |
+|---|---:|---:|---:|
+| NeMo 12B, mit Frage-Kontext | 100 % | 3,1 % | 97,5 % |
+| NeMo 12B, ohne Frage-Kontext | 100 % | 9,4 % | 92,5 % |
+
+**Merke:** Frage-Kontext ist für die aktuelle Proxy-Konfiguration plausibel
+entschieden (Default AN), aber die produktionsnahe Präzision muss am echten
+BRZ-Endpoint bzw. einem produktionsnahen Modell gemessen werden. Fallen-Recall
+= 100 % ist über die bisherigen Läufe stabil; er darf trotzdem nur auf das
+aktuelle Testset bezogen werden.
 
 ## Quellen
 

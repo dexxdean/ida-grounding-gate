@@ -11,8 +11,9 @@ Zwei Implementierungen:
    Kette (Harvest → Gate → Audit) sofort end-to-end testbar.
 
 2. `MistralJudge`    — der eigentliche Prüfer: eine zweite, unabhängige
-   Mistral-Instanz im BRZ (on-prem). NOCH NICHT IMPLEMENTIERT — siehe TODO.
-   Bewusst als Stub, damit hier keine echte API vorgetäuscht wird.
+   Mistral-Instanz im BRZ (on-prem) bzw. ein OpenAI-kompatibler Proxy. Der
+   Adapter ist implementiert; offen bleibt die Kalibrierung gegen den echten
+   BRZ-Endpoint.
 """
 
 from __future__ import annotations

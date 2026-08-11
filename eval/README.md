@@ -7,7 +7,7 @@ python3 eval/run_eval.py                    # Vergleich spiegel vs. paraphrase (
 python3 eval/run_eval.py --mode paraphrase  # nur der realistische Modus
 python3 eval/run_eval.py --mode spiegel     # nur Verdrahtungs-Check (Overlap trivial)
 python3 eval/run_eval.py --json             # maschinenlesbar (Zeilen + Kennzahlen)
-python3 eval/run_eval.py --judge mistral    # sobald der BRZ-Endpoint steht
+python3 eval/run_eval.py --judge mistral    # mit konfiguriertem LLMaaS-/Ollama-Endpoint
 ```
 
 ## Kennzahlen
@@ -50,5 +50,19 @@ empirisch die dominante Miss-Ursache. Das senkt die Übervorsicht auf **3,1 %**
 (nur noch 1 Fehlblock), ohne einen Fallen-Recall-Verlust. Der **verbleibende**
 Fehlblock ist rein **semantisch** (Synonyme: „App"→„Anwendung",
 „ermöglicht"→„erlaubt", „Fingerprint"→„Fingerabdruck") — lexikalisch nicht
-auflösbar. Genau diesen Rest schließt der `MistralJudge` (Entailment statt
-Wort-Overlap) — der nächste Schritt.
+auflösbar. Genau dafür ist der `MistralJudge` gedacht: Entailment statt
+Wort-Overlap.
+
+## Proxy-Befund mit MistralJudge
+
+Der `MistralJudge` ist als Adapter implementiert und wurde lokal gegen
+OpenAI-kompatible Ollama-Endpoints getestet. Der relevante Proxy-Lauf ist NeMo 12B:
+
+| Judge / Modus | Fallen-Recall | Übervorsicht | Genauigkeit |
+|---|---:|---:|---:|
+| NeMo 12B, mit Frage-Kontext | 100 % | 3,1 % | 97,5 % |
+| NeMo 12B, ohne Frage-Kontext | 100 % | 9,4 % | 92,5 % |
+
+Interpretation: Für die aktuelle Proxy-Konfiguration bleibt Frage-Kontext
+standardmäßig AN. Die produktionsnahe Präzision muss trotzdem am echten
+BRZ-Endpoint bzw. einem stärkeren produktionsnahen Modell kalibriert werden.
