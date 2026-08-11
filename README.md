@@ -1,5 +1,8 @@
 # idaverbesserung — Grounding-Gate für „ida"
 
+[![DOI](https://zenodo.org/badge/1330077281.svg)](https://doi.org/10.5281/zenodo.21888079)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+
 Eine unabhängige Prüfschicht (**Grounding-Gate**), die jede Entwurfsantwort eines
 RAG-Chatbots gegen die tatsächlich abgerufenen Quellabschnitte prüft, **bevor** sie
 an Bürgerinnen und Bürger ausgeliefert wird. Im Zweifel: keine Antwort statt einer
